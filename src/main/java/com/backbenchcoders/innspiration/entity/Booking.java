@@ -2,17 +2,21 @@ package com.backbenchcoders.innspiration.entity;
 
 import com.backbenchcoders.innspiration.entity.enums.BookingStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Booking {
 
     @Id
@@ -35,10 +39,10 @@ public class Booking {
     private Integer roomsCount;
 
     @Column(nullable = false)
-    private LocalDateTime checkInDate;
+    private LocalDate checkInDate;
 
     @Column(nullable = false)
-    private LocalDateTime checkOutDate;
+    private LocalDate checkOutDate;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -46,9 +50,6 @@ public class Booking {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -61,5 +62,8 @@ public class Booking {
             inverseJoinColumns = @JoinColumn(name = "guest_id")
     )
     private Set<Guest> guests;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal amount;
 
 }
