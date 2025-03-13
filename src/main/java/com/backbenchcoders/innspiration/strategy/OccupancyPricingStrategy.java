@@ -2,11 +2,9 @@ package com.backbenchcoders.innspiration.strategy;
 
 import com.backbenchcoders.innspiration.entity.Inventory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@Service
 @RequiredArgsConstructor
 public class OccupancyPricingStrategy implements PricingStrategy{
     private final PricingStrategy wrapped;

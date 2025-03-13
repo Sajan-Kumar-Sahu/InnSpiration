@@ -1,10 +1,12 @@
 package com.backbenchcoders.innspiration.service.implementation;
 
 import com.backbenchcoders.innspiration.dto.HotelDto;
+import com.backbenchcoders.innspiration.dto.HotelPriceDto;
 import com.backbenchcoders.innspiration.dto.HotelSearchRequest;
 import com.backbenchcoders.innspiration.entity.Hotel;
 import com.backbenchcoders.innspiration.entity.Inventory;
 import com.backbenchcoders.innspiration.entity.Room;
+import com.backbenchcoders.innspiration.repository.HotelMinPriceRepository;
 import com.backbenchcoders.innspiration.repository.InventoryRepository;
 import com.backbenchcoders.innspiration.service.InventoryService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class InventoryServiceImpl implements InventoryService {
     private final ModelMapper modelMapper;
 
     private final InventoryRepository inventoryRepository;
+    private final HotelMinPriceRepository hotelMinPriceRepository;
 
     @Override
     public void initializeRoomForAYear(Room room) {
@@ -55,12 +58,12 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Page<HotelDto> searchHotels(HotelSearchRequest hotelSearchRequest) {
+    public Page<HotelPriceDto> searchHotels(HotelSearchRequest hotelSearchRequest) {
 
         Long dateCount = ChronoUnit.DAYS.between(hotelSearchRequest.getStartDate(),hotelSearchRequest.getEndDate()) +1;
         Pageable pageable = PageRequest.of(hotelSearchRequest.getPage(), hotelSearchRequest.getSize());
 
-        Page< Hotel> hotelPage = inventoryRepository.findHotelsWithAvailableInventory(
+        Page<HotelPriceDto> hotelPage = hotelMinPriceRepository.findHotelsWithAvailableInventory(
                 hotelSearchRequest.getCity(),
                 hotelSearchRequest.getStartDate(),
                 hotelSearchRequest.getEndDate(),
@@ -68,6 +71,6 @@ public class InventoryServiceImpl implements InventoryService {
                 dateCount,pageable
         );
 
-        return hotelPage.map((element) -> modelMapper.map(element, HotelDto.class));
+        return hotelPage;
     }
 }

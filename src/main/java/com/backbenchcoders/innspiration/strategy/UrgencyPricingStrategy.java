@@ -2,12 +2,10 @@ package com.backbenchcoders.innspiration.strategy;
 
 import com.backbenchcoders.innspiration.entity.Inventory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Service
 @RequiredArgsConstructor
 public class UrgencyPricingStrategy implements PricingStrategy{
 
