@@ -6,11 +6,13 @@ import com.backbenchcoders.innspiration.dto.GuestDto;
 import com.backbenchcoders.innspiration.entity.*;
 import com.backbenchcoders.innspiration.entity.enums.BookingStatus;
 import com.backbenchcoders.innspiration.exception.ResourceNotFoundException;
+import com.backbenchcoders.innspiration.exception.UnauthorizedException;
 import com.backbenchcoders.innspiration.repository.*;
 import com.backbenchcoders.innspiration.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,6 +85,11 @@ public class BookingServiceImpl implements BookingService {
         Booking booking= bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking Not Found with id: " + bookingId));
 
+        User user = getCurrentUser();
+        if(!user.equals(booking.getUser())){
+            throw new UnauthorizedException("Booking does not belong to this user with id: "+user.getId());
+        }
+
         if(hasBookingExpired(booking)){
             throw new IllegalStateException("Booking has already expired");
         }
@@ -93,7 +100,7 @@ public class BookingServiceImpl implements BookingService {
 
         for(GuestDto guestDto : guestDtoList){
             Guest guest = modelMapper.map(guestDto, Guest.class);
-            guest.setUser(getCurrentUser());
+            guest.setUser(user);
             guestRepository.save(guest);
             booking.getGuests().add(guest);
         }
@@ -107,8 +114,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public User getCurrentUser(){
-        User user = new User(); //TODO: Remove Dummy User
-        user.setId(1L);
-        return user;
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
