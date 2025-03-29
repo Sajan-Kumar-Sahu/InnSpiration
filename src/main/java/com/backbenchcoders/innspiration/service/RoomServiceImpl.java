@@ -1,4 +1,4 @@
-package com.backbenchcoders.innspiration.service.implementation;
+package com.backbenchcoders.innspiration.service;
 
 import com.backbenchcoders.innspiration.dto.RoomDto;
 import com.backbenchcoders.innspiration.entity.Hotel;
@@ -8,8 +8,6 @@ import com.backbenchcoders.innspiration.exception.ResourceNotFoundException;
 import com.backbenchcoders.innspiration.exception.UnauthorizedException;
 import com.backbenchcoders.innspiration.repository.HotelRepository;
 import com.backbenchcoders.innspiration.repository.RoomRepository;
-import com.backbenchcoders.innspiration.service.InventoryService;
-import com.backbenchcoders.innspiration.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,7 +37,7 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(()-> new ResourceNotFoundException("Hotel Not Found with ID: "+hotelId));
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
+        if(!user.getId().equals(hotel.getOwner().getId())){
             throw new UnauthorizedException("This user does not own this hotel with id: "+hotelId);
         }
 
@@ -63,7 +61,7 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(()-> new ResourceNotFoundException("Hotel Not Found with ID: "+hotelId));
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
+        if(!user.getId().equals(hotel.getOwner().getId())){
             throw new UnauthorizedException("This user does not own this hotel with id: "+hotelId);
         }
 
@@ -90,7 +88,7 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(()-> new ResourceNotFoundException("Room Not found with ID: "+roomId));
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(room.getHotel().getOwner())){
+        if(!user.getId().equals(room.getHotel().getOwner().getId())){
             throw new UnauthorizedException("This user does not own this room with id: "+roomId);
         }
 

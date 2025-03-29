@@ -1,4 +1,4 @@
-package com.backbenchcoders.innspiration.service.implementation;
+package com.backbenchcoders.innspiration.service;
 
 import com.backbenchcoders.innspiration.dto.HotelDto;
 import com.backbenchcoders.innspiration.dto.HotelInfoDto;
@@ -10,8 +10,6 @@ import com.backbenchcoders.innspiration.exception.ResourceNotFoundException;
 import com.backbenchcoders.innspiration.exception.UnauthorizedException;
 import com.backbenchcoders.innspiration.repository.HotelRepository;
 import com.backbenchcoders.innspiration.repository.RoomRepository;
-import com.backbenchcoders.innspiration.service.HotelService;
-import com.backbenchcoders.innspiration.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -88,7 +85,7 @@ public class HotelServiceImpl implements HotelService {
                 .orElseThrow(()-> new ResourceNotFoundException("Hotel Not Found with id: "+id));
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
+        if(!user.getId().equals(hotel.getOwner().getId())){
             throw new UnauthorizedException("This user does not own this hotel with id: "+id);
         }
 
@@ -109,7 +106,7 @@ public class HotelServiceImpl implements HotelService {
                 .orElseThrow(()-> new ResourceNotFoundException("Hotel Not Found with id: "+hotelId));
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!user.equals(hotel.getOwner())){
+        if(!user.getId().equals(hotel.getOwner().getId())){
             throw new UnauthorizedException("This user does not own this hotel with id: "+hotelId);
         }
 

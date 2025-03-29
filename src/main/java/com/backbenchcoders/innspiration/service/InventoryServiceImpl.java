@@ -1,14 +1,11 @@
-package com.backbenchcoders.innspiration.service.implementation;
+package com.backbenchcoders.innspiration.service;
 
-import com.backbenchcoders.innspiration.dto.HotelDto;
 import com.backbenchcoders.innspiration.dto.HotelPriceDto;
 import com.backbenchcoders.innspiration.dto.HotelSearchRequest;
-import com.backbenchcoders.innspiration.entity.Hotel;
 import com.backbenchcoders.innspiration.entity.Inventory;
 import com.backbenchcoders.innspiration.entity.Room;
 import com.backbenchcoders.innspiration.repository.HotelMinPriceRepository;
 import com.backbenchcoders.innspiration.repository.InventoryRepository;
-import com.backbenchcoders.innspiration.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

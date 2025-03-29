@@ -34,8 +34,9 @@ public class PricingUpdateService {
     private final HotelMinPriceRepository hotelMinPriceRepository;
     private final PricingService pricingService;
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void updatePrice(){
+        log.info("Updating the hotel_min_price with cron job");
         int page = 0;
         int batchSize =100;
 

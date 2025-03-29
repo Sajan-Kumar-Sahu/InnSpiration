@@ -1,9 +1,8 @@
-package com.backbenchcoders.innspiration.service.implementation;
+package com.backbenchcoders.innspiration.service;
 
 import com.backbenchcoders.innspiration.entity.User;
 import com.backbenchcoders.innspiration.exception.ResourceNotFoundException;
 import com.backbenchcoders.innspiration.repository.UserRepository;
-import com.backbenchcoders.innspiration.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
