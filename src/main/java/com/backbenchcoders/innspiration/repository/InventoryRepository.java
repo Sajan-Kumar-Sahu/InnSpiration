@@ -1,5 +1,6 @@
 package com.backbenchcoders.innspiration.repository;
 
+import com.backbenchcoders.innspiration.dto.RoomPriceDto;
 import com.backbenchcoders.innspiration.entity.Hotel;
 import com.backbenchcoders.innspiration.entity.Inventory;
 import com.backbenchcoders.innspiration.entity.Room;
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -124,4 +126,59 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     );
 
     List<Inventory> findByHotelAndDateBetween(Hotel hotel, LocalDate startDate, LocalDate endDate);
+
+    List<Inventory> findByRoomOrderByDate(Room room);
+
+    @Modifying
+    @Query("""
+            SELECT i
+            FROM Inventory i
+            WHERE i.room.id = :roomId
+                AND i.date BETWEEN :startDate and :endDate
+    """)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Inventory> getInventoryAndLockBeforeUpdate(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    @Modifying
+    @Query("""
+            UPDATE Inventory i
+            SET i.surgeFactor = :surgeFactor,
+                i.isClosed = :isClosed
+            WHERE i.room.id = :roomId
+                AND i.date BETWEEN :startDate and :endDate
+    """)
+    void updateInventory(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("surgeFactor") BigDecimal surgeFactor,
+            @Param("isClosed") Boolean isClosed
+    );
+
+    @Query("""
+       SELECT new com.backbenchcoders.innspiration.dto.RoomPriceDto(
+            i.room,
+            CASE
+                WHEN COUNT(i) = :dateCount THEN AVG(i.price)
+                ELSE NULL
+            END
+        )
+       FROM Inventory i
+       WHERE i.hotel.id = :hotelId
+             AND i.date BETWEEN :startDate AND :endDate
+             AND (i.totalCount - i.bookedCount) >= :roomsCount
+             AND i.isClosed = false
+       GROUP BY i.room
+       """)
+    List<RoomPriceDto> findRoomAveragePrice(
+            @Param("hotelId") Long hotelId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("roomsCount") Long roomsCount,
+            @Param("dateCount") Long dateCount
+    );
 }

@@ -1,10 +1,10 @@
 package com.backbenchcoders.innspiration.service;
 
-import com.backbenchcoders.innspiration.dto.HotelDto;
-import com.backbenchcoders.innspiration.dto.HotelPriceDto;
-import com.backbenchcoders.innspiration.dto.HotelSearchRequest;
+import com.backbenchcoders.innspiration.dto.*;
 import com.backbenchcoders.innspiration.entity.Room;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface InventoryService {
 
@@ -12,6 +12,9 @@ public interface InventoryService {
 
     void deleteAllInventories(Room room);
 
-    Page<HotelPriceDto> searchHotels(HotelSearchRequest hotelSearchRequest);
+    Page<HotelPriceResponseDto> searchHotels(HotelSearchRequest hotelSearchRequest);
 
+    List<InventoryDto> getAllInventoryByRoom(Long roomId);
+
+    void updateInventory(Long roomId, UpdateInventoryRequestDto updateInventoryRequestDto);
 }

@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.backbenchcoders.innspiration.util.AppUtils.getCurrentUser;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -38,7 +40,7 @@ public class RoomServiceImpl implements RoomService {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(!user.getId().equals(hotel.getOwner().getId())){
-            throw new UnauthorizedException("This user does not own this hotel with id: "+hotelId);
+            throw new UnauthorizedException("This user does not own this hotel with  hotelId: "+hotelId);
         }
 
         Room room = modelMapper.map(roomDto, Room.class);
@@ -62,7 +64,7 @@ public class RoomServiceImpl implements RoomService {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(!user.getId().equals(hotel.getOwner().getId())){
-            throw new UnauthorizedException("This user does not own this hotel with id: "+hotelId);
+            throw new UnauthorizedException("This user does not own this hotel with  hotelId: "+hotelId);
         }
 
         return hotel.getRooms()
@@ -89,11 +91,36 @@ public class RoomServiceImpl implements RoomService {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(!user.getId().equals(room.getHotel().getOwner().getId())){
-            throw new UnauthorizedException("This user does not own this room with id: "+roomId);
+            throw new UnauthorizedException("This user does not own this room with  hotelId: "+roomId);
         }
 
         roomRepository.deleteById(roomId);
 
         inventoryService.deleteAllInventories(room);
+    }
+
+    @Override
+    @Transactional
+    public RoomDto updateRoomById(Long hotelId, Long roomId, RoomDto roomDto) {
+        log.info("Updating Room with Id: {}", roomId);
+        Hotel hotel = hotelRepository
+                .findById( hotelId)
+                .orElseThrow(()->new ResourceNotFoundException("Hotel Not found with  hotelId: "+ hotelId));
+
+        User user = getCurrentUser();
+        if(!user.getId().equals(hotel.getOwner().getId())){
+            throw new UnauthorizedException("This user does not own this hotel with  hotelId: "+ hotelId);
+        }
+
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(()->new ResourceNotFoundException("Room Not found with  hotelId: "+ roomId));
+
+        modelMapper.map(roomDto, room);
+        room.setId(roomId);
+        room = roomRepository.save(room);
+
+        //TODO: if price or inventory is updated, then update the inventory for this room.
+
+        return modelMapper.map(room, RoomDto.class);
     }
 }

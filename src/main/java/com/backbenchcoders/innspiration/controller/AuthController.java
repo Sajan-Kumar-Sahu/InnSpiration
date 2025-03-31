@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -40,6 +42,22 @@ public class AuthController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok(new LoginResponseDto(tokens[0]));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response, HttpServletRequest request) {
+
+        log.info("logging out....");
+        // Clear the refreshToken cookie
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // Expire immediately
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
+        log.info("logged out successfully. cookies are cleared");
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/refresh")

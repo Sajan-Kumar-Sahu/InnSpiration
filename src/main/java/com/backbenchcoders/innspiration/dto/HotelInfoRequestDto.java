@@ -9,13 +9,8 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HotelSearchRequest {
-
-    private String city;
+public class HotelInfoRequestDto {
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer roomsCount;
-
-    private Integer page = 0;
-    private Integer size = 10;
+    private Long roomsCount;
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,7 +28,7 @@ public class Guest {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private Integer age;
+    private LocalDate dateOfBirth;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
